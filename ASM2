@@ -1,0 +1,159 @@
+# ===============================
+# Giai đoạn 2 - Assignment DAT201
+# Quản lý nhân sự tiền lương
+# ===============================
+
+class NhanVien:
+    def __init__(self, ma, hoTen, luong):
+        self.ma = ma
+        self.hoTen = hoTen
+        self.luong = luong
+
+    def getThuNhap(self):
+        return self.luong
+
+    def getThueTN(self):
+        thuNhap = self.getThuNhap()
+        if thuNhap < 9000000:
+            return 0
+        elif thuNhap <= 15000000:
+            return thuNhap * 0.1
+        else:
+            return thuNhap * 0.12
+
+    def __str__(self):
+        return f"{self.ma:10} | {self.hoTen:20} | {self.getThuNhap():,.0f} | Thuế: {self.getThueTN():,.0f}"
+
+
+class TiepThi(NhanVien):
+    def __init__(self, ma, hoTen, luong, doanhSo, hoaHong):
+        super().__init__(ma, hoTen, luong)
+        self.doanhSo = doanhSo
+        self.hoaHong = hoaHong
+
+    def getThuNhap(self):
+        return self.luong + self.doanhSo * self.hoaHong
+
+
+class TruongPhong(NhanVien):
+    def __init__(self, ma, hoTen, luong, trachNhiem):
+        super().__init__(ma, hoTen, luong)
+        self.trachNhiem = trachNhiem
+
+    def getThuNhap(self):
+        return self.luong + self.trachNhiem
+
+
+# ===============================
+# Quản lý danh sách nhân viên
+# ===============================
+
+dsNhanVien = []
+
+def nhapNhanVien():
+    print("\nChọn loại nhân viên:")
+    print("1. Hành chính")
+    print("2. Tiếp thị")
+    print("3. Trưởng phòng")
+    loai = input("Nhập lựa chọn: ")
+
+    ma = input("Mã nhân viên: ")
+    hoTen = input("Họ tên: ")
+    luong = float(input("Lương cơ bản: "))
+
+    if loai == "1":
+        nv = NhanVien(ma, hoTen, luong)
+    elif loai == "2":
+        doanhSo = float(input("Doanh số: "))
+        hoaHong = float(input("Tỉ lệ hoa hồng (vd: 0.05): "))
+        nv = TiepThi(ma, hoTen, luong, doanhSo, hoaHong)
+    elif loai == "3":
+        trachNhiem = float(input("Lương trách nhiệm: "))
+        nv = TruongPhong(ma, hoTen, luong, trachNhiem)
+    else:
+        print("❌ Lựa chọn không hợp lệ!")
+        return
+
+    dsNhanVien.append(nv)
+    print("✅ Đã thêm nhân viên thành công!")
+
+
+def xuatDanhSach():
+    print("\n=== DANH SÁCH NHÂN VIÊN ===")
+    for nv in dsNhanVien:
+        print(nv)
+
+
+def timTheoMa():
+    ma = input("Nhập mã nhân viên cần tìm: ")
+    for nv in dsNhanVien:
+        if nv.ma == ma:
+            print(nv)
+            return
+    print("❌ Không tìm thấy nhân viên.")
+
+
+def timTheoKhoangLuong():
+    minL = float(input("Nhập lương thấp nhất: "))
+    maxL = float(input("Nhập lương cao nhất: "))
+    print("\n=== KẾT QUẢ TÌM KIẾM ===")
+    for nv in dsNhanVien:
+        if minL <= nv.getThuNhap() <= maxL:
+            print(nv)
+
+
+def sapXepTheoTen():
+    dsNhanVien.sort(key=lambda nv: nv.hoTen.split()[-1])
+    print("✅ Đã sắp xếp theo tên.")
+
+
+def sapXepTheoThuNhap():
+    dsNhanVien.sort(key=lambda nv: nv.getThuNhap(), reverse=True)
+    print("✅ Đã sắp xếp theo thu nhập.")
+
+
+def top5ThuNhap():
+    print("\n=== 5 NHÂN VIÊN THU NHẬP CAO NHẤT ===")
+    top5 = sorted(dsNhanVien, key=lambda nv: nv.getThuNhap(), reverse=True)[:5]
+    for nv in top5:
+        print(nv)
+
+
+# ===============================
+# MENU CHÍNH
+# ===============================
+def menu():
+    while True:
+        print("\n===== MENU QUẢN LÝ NHÂN VIÊN =====")
+        print("1. Nhập danh sách nhân viên")
+        print("2. Xuất danh sách nhân viên")
+        print("3. Tìm nhân viên theo mã")
+        print("4. Tìm nhân viên theo khoảng lương")
+        print("5. Sắp xếp theo tên")
+        print("6. Sắp xếp theo thu nhập")
+        print("7. Xuất 5 nhân viên có thu nhập cao nhất")
+        print("0. Thoát")
+        chon = input("Chọn chức năng: ")
+
+        if chon == "1":
+            nhapNhanVien()
+        elif chon == "2":
+            xuatDanhSach()
+        elif chon == "3":
+            timTheoMa()
+        elif chon == "4":
+            timTheoKhoangLuong()
+        elif chon == "5":
+            sapXepTheoTen()
+        elif chon == "6":
+            sapXepTheoThuNhap()
+        elif chon == "7":
+            top5ThuNhap()
+        elif chon == "0":
+            print("Kết thúc chương trình.")
+            break
+        else:
+            print("❌ Lựa chọn không hợp lệ!")
+
+# Chạy chương trình
+menu()
